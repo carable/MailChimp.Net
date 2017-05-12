@@ -55,6 +55,7 @@ namespace MailChimp.Net.Core
                     throw new MailChimpNotFoundException($"Unable to find the resource at {response.RequestMessage.RequestUri} ");
                 }
                 var err = (await response.Content.ReadAsStreamAsync()).Deserialize<MailChimpError>();
+                if (err.Errors == null) err.Errors = new List<MailChimpException.Error>();
 				var errorText =
 	$"Title: {err.Title + Environment.NewLine} Type: {err.Type + Environment.NewLine} Status: {err.Status + Environment.NewLine} + Detail: {err.Detail + Environment.NewLine}";
 				errorText += "Errors: " + string.Join(" : ", err.Errors.Select(x => x.Field + " " + x.Message));

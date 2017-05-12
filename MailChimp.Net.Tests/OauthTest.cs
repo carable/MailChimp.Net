@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -12,7 +13,7 @@ namespace MailChimp.Net.Tests
         public OauthTest()
         {
             var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("logging.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
@@ -32,8 +33,8 @@ namespace MailChimp.Net.Tests
         {
             var oauthmailChimpManager = new MailChimpManager(new MailChimpOauthConfiguration
             {
-                DataCenter = Configuration["MailChimpOauthDataCenter"],
-                OauthToken = Configuration["MailChimpOauthToken"],
+                DataCenter = Configuration["AppSettings:MailChimpOauthDataCenter"],
+                OauthToken = Configuration["AppSettings:MailChimpOauthToken"],
             });
 
             var apiInfo = await oauthmailChimpManager.Api.GetInfoAsync().ConfigureAwait(false);
