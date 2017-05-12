@@ -11,7 +11,7 @@ namespace MailChimp.Net.Tests
         private const string ListName = "TestListWebhooks";
         private string _listId = string.Empty;
 
-        protected override async Task RunBeforeTestFixture()
+        override internal async Task RunBeforeTestFixture()
         {
             await ClearLists(ListName).ConfigureAwait(false);
 

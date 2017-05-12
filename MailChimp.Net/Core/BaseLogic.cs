@@ -50,7 +50,7 @@ namespace MailChimp.Net.Core
             {
                 handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate;
             }
-
+            if (string.IsNullOrEmpty(this._mailChimpConfiguration.DataCenter)) throw new NullReferenceException(nameof(this._mailChimpConfiguration.DataCenter));
             var client = new HttpClient(handler)
                              {
                                  BaseAddress =

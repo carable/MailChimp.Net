@@ -6,7 +6,7 @@
 
 using System;
 using System.Net.Http;
-using System.Net.Http.Formatting;
+using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -18,6 +18,9 @@ namespace MailChimp.Net.Core
     /// </summary>
     public static class HttpRequestExtensions
     {
+        private readonly static JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { 
+            NullValueHandling = NullValueHandling.Ignore
+        };
         /// <summary>
         /// The patch as json async.
         /// </summary>
@@ -29,10 +32,6 @@ namespace MailChimp.Net.Core
         /// </param>
         /// <param name="value">
         /// The value.
-        /// </param>
-        /// <param name="formatter">
-        /// The formatter.
-        /// </param>
         /// <typeparam name="T">
         /// </typeparam>
         /// <returns>
@@ -41,21 +40,10 @@ namespace MailChimp.Net.Core
         public static async Task<HttpResponseMessage> PatchAsJsonAsync<T>(
             this HttpClient client, 
             string requestUri, 
-            T value, 
-            JsonMediaTypeFormatter formatter = null)
+            T value)
         {
-            var jsonFormatter = formatter
-                                ?? new JsonMediaTypeFormatter
-                                       {
-                                           SerializerSettings =
-                                               {
-                                                   NullValueHandling =
-                                                       NullValueHandling.Ignore
-                                               }
-                                       };
-            var content = new ObjectContent<T>(value, jsonFormatter);
-            var m = content.ReadAsStringAsync().Result; // This line fixes the tests but I dont know why (ngm)
-            return await client.PatchAsync(requestUri, content).ConfigureAwait(false);
+			return await client.PatchAsync(requestUri, new StringContent(JsonConvert.SerializeObject(value,jsonSettings),
+																	   Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -100,9 +88,6 @@ namespace MailChimp.Net.Core
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
-        /// The formatter.
-        /// </param>
         /// <typeparam name="T">
         /// </typeparam>
         /// <returns>
@@ -111,21 +96,10 @@ namespace MailChimp.Net.Core
         public static async Task<HttpResponseMessage> PutAsJsonAsync<T>(
             this HttpClient client,
             string requestUri,
-            T value,
-            JsonMediaTypeFormatter formatter = null)
+            T value)
         {
-            var jsonFormatter = formatter
-                                ?? new JsonMediaTypeFormatter
-                                {
-                                    SerializerSettings =
-                                               {
-                                                   NullValueHandling =
-                                                       NullValueHandling.Ignore
-                                               }
-                                };
-            var content = new ObjectContent<T>(value, jsonFormatter);
-            var m = content.ReadAsStringAsync().Result; // This line fixes the tests but I dont know why (ngm)
-            return await client.PutAsync(requestUri, content).ConfigureAwait(false);
+            return await client.PutAsync(requestUri, new StringContent(JsonConvert.SerializeObject(value, jsonSettings), 
+                                                                       Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -140,9 +114,6 @@ namespace MailChimp.Net.Core
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
-        /// The formatter.
-        /// </param>
         /// <typeparam name="T">
         /// </typeparam>
         /// <returns>
@@ -151,21 +122,10 @@ namespace MailChimp.Net.Core
         public static async Task<HttpResponseMessage> PostAsJsonAsync<T>(
             this HttpClient client,
             string requestUri,
-            T value,
-            JsonMediaTypeFormatter formatter = null)
+            T value)
         {
-            var jsonFormatter = formatter
-                                ?? new JsonMediaTypeFormatter
-                                {
-                                    SerializerSettings =
-                                               {
-                                                   NullValueHandling =
-                                                       NullValueHandling.Ignore
-                                               }
-                                };
-            var content = new ObjectContent<T>(value, jsonFormatter);
-            var m = content.ReadAsStringAsync().Result; // This line fixes the tests but I dont know why (ngm)
-            return await client.PostAsync(requestUri, content).ConfigureAwait(false);
+			return await client.PostAsync(requestUri, new StringContent(JsonConvert.SerializeObject(value, jsonSettings),
+																	   Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
     }

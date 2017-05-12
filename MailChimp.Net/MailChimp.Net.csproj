@@ -1,11 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+  </PropertyGroup>
+  <PropertyGroup>
+     <TargetFramework Condition=" '$(IsWindows)' == ''">netstandard1.6</TargetFramework>
+     <TargetFrameworks Condition=" '$(IsWindows)' == 'true'">netstandard1.6;net45</TargetFrameworks>
+     <PackageId>MailChimp.Net.V3</PackageId>
+     <Authors>Brandon Seydel</Authors>
+     <Product>MailChimp.Net.V3</Product>
+     <Description>A .NET Wrapper for Mail Chimp v3.0 API</Description>
+     <RepositoryUrl>https://github.com/brandonseydel/MailChimp.Net</RepositoryUrl>
+     <VersionPrefix>2.0.0</VersionPrefix>
+     <VersionSuffix>alpha-1</VersionSuffix>
+     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+     <Version>2.0.0-$(VersionSuffix)</Version>
+     <AssemblyVersion>2.0.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.4-alpha1-170218" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.1" />

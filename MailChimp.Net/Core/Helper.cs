@@ -5,7 +5,9 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -21,6 +23,17 @@ namespace MailChimp.Net.Core
     /// </summary>
     public static class Helper
     {
+        private class MailChimpError
+        {
+			public string Detail { get; set; }
+			public string Instance { get; set; }
+			public int Status { get; set; }
+			public string Title { get; set; }
+			public string Type { get; set; }
+            public List<MailChimpException.Error> Errors { get; set; }
+
+		}
+
         /// <summary>
         /// The ensure success mail chimp async.
         /// </summary>
@@ -41,8 +54,20 @@ namespace MailChimp.Net.Core
                 {
                     throw new MailChimpNotFoundException($"Unable to find the resource at {response.RequestMessage.RequestUri} ");
                 }
+                var err = (await response.Content.ReadAsStreamAsync()).Deserialize<MailChimpError>();
+				var errorText =
+	$"Title: {err.Title + Environment.NewLine} Type: {err.Type + Environment.NewLine} Status: {err.Status + Environment.NewLine} + Detail: {err.Detail + Environment.NewLine}";
+				errorText += "Errors: " + string.Join(" : ", err.Errors.Select(x => x.Field + " " + x.Message));
 
-                throw (await response.Content.ReadAsStreamAsync().ConfigureAwait(false)).Deserialize<MailChimpException>();
+                throw new MailChimpException(errorText)
+                {
+                    Detail = err.Detail,
+                    Errors = err.Errors,
+                    Instance = err.Instance,
+                    Status = err.Status,
+                    Title = err.Title,
+                    Type = err.Type,
+                };
             }
         }
 
